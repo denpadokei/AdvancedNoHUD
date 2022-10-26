@@ -168,8 +168,8 @@ namespace AdvancedNoHUD
 
                     var x = cam.GetComponent<LIV.SDK.Unity.LIV>();
 
-                    if (x != null)
-                        x.SpectatorLayerMask = HiddenHudLayer;
+                    //if (x != null)
+                    //    x.SpectatorLayerMask = HiddenHudLayer;
                 }
                 else
                 {
