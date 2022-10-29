@@ -4,8 +4,7 @@ using BeatSaberMarkupLanguage.ViewControllers;
 
 namespace AdvancedNoHUD.UI.ViewControllers
 {
-    [HotReload(RelativePathToLayout = @"PauseViewController.bsml")]
-    [ViewDefinition("AdvancedNoHUD.UI.ViewControllers.PauseViewController.bsml")]
+    [HotReload]
     public class PauseViewController : BSMLAutomaticViewController
     {
         public void Initialize()

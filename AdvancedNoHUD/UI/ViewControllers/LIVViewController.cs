@@ -4,8 +4,7 @@ using BeatSaberMarkupLanguage.ViewControllers;
 
 namespace AdvancedNoHUD.UI.ViewControllers
 {
-    [HotReload(RelativePathToLayout = @"LIVViewController.bsml")]
-    [ViewDefinition("AdvancedNoHUD.UI.ViewControllers.LIVViewController.bsml")]
+    [HotReload]
     public class LIVViewController : BSMLAutomaticViewController
     {
         public void Initialize()

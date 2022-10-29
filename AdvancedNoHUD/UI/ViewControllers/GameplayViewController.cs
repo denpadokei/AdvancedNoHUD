@@ -4,8 +4,7 @@ using BeatSaberMarkupLanguage.ViewControllers;
 
 namespace AdvancedNoHUD.UI.ViewControllers
 {
-    [HotReload(RelativePathToLayout = @"GameplayViewController.bsml")]
-    [ViewDefinition("AdvancedNoHUD.UI.ViewControllers.GameplayViewController.bsml")]
+    [HotReload]
     public class GameplayViewController : BSMLAutomaticViewController
     {
         [UIValue("setting-scene")]
