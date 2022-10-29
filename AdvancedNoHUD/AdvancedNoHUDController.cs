@@ -1,4 +1,4 @@
-﻿using AdvancedNoHUD.CustomTypes;
+﻿using AdvancedNoHUD.Configuration;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -53,7 +53,7 @@ namespace AdvancedNoHUD
             if (this.FindHUD()) {
                 this._found = true;
                 this.FindHUDElements();
-                this.PutThings(CustomTypes.whereHUD.HMD);
+                this.PutThings(WhereHUD.HMD);
             }
 #if DEBUG
             Plugin.Log.Info("Finished Setup");
@@ -72,7 +72,7 @@ namespace AdvancedNoHUD
             Plugin.Log.Info("AudioTimeSyncController.Pause()");
 #endif
             if (this._found) {
-                this.PutThings(CustomTypes.whereHUD.Pause);
+                this.PutThings(WhereHUD.Pause);
             }
         }
         private void GamePause_didResumeEvent()
@@ -81,7 +81,7 @@ namespace AdvancedNoHUD
             Plugin.Log.Info("AudioTimeSyncController.Resume()");
 #endif
             if (this._found) {
-                this.PutThings(CustomTypes.whereHUD.HMD);
+                this.PutThings(WhereHUD.HMD);
             }
         }
 
@@ -129,24 +129,24 @@ namespace AdvancedNoHUD
             this.AssignObject(ref this._health, "EnergyPanel");
         }
 
-        public void PutThings(whereHUD wh)
+        public void PutThings(WhereHUD wh)
         {
             var tempPreset = new LocationPreset();
             switch (wh) {
-                case whereHUD.HMD:
-                    tempPreset = Configuration.PluginConfig.Instance.HMD;
+                case WhereHUD.HMD:
+                    tempPreset = PluginConfig.Instance.HMD;
                     break;
-                case whereHUD.Pause:
-                    tempPreset = Configuration.PluginConfig.Instance.Pause;
+                case WhereHUD.Pause:
+                    tempPreset = PluginConfig.Instance.Pause;
                     break;
             }
             try {
-                this.VerboseActive(ref this._combo, tempPreset.elements.combo, "Combo");
-                this.VerboseActive(ref this._score, tempPreset.elements.score, "Score");
-                this.VerboseActive(ref this._rank, tempPreset.elements.rank, "Rank");
-                this.VerboseActive(ref this._multiplier, tempPreset.elements.multiplier, "Multiplier");
-                this.VerboseActive(ref this._progress, tempPreset.elements.progress, "Progress");
-                this.VerboseActive(ref this._health, tempPreset.elements.health, "Health");
+                this.VerboseActive(ref this._combo, tempPreset.Elements.Combo, "Combo");
+                this.VerboseActive(ref this._score, tempPreset.Elements.Score, "Score");
+                this.VerboseActive(ref this._rank, tempPreset.Elements.Rank, "Rank");
+                this.VerboseActive(ref this._multiplier, tempPreset.Elements.Multiplier, "Multiplier");
+                this.VerboseActive(ref this._progress, tempPreset.Elements.Progress, "Progress");
+                this.VerboseActive(ref this._health, tempPreset.Elements.EnargyBar, "Health");
             }
             catch (NullReferenceException) {
                 this.FindHUDElements();
@@ -155,19 +155,19 @@ namespace AdvancedNoHUD
         }
         public void HideInLiv()
         {
-            var elements = Configuration.PluginConfig.Instance.LIV.elements;
+            var elements = PluginConfig.Instance.LIV.Elements;
 
-            this._combo.layer = !elements.combo ? 23 : 5;
+            this._combo.layer = !elements.Combo ? 23 : 5;
 
-            this._score.layer = !elements.score ? 23 : 5;
+            this._score.layer = !elements.Score ? 23 : 5;
 
-            this._rank.layer = !elements.rank ? 23 : 5;
+            this._rank.layer = !elements.Rank ? 23 : 5;
 
-            this._multiplier.layer = !elements.multiplier ? 23 : 5;
+            this._multiplier.layer = !elements.Multiplier ? 23 : 5;
 
-            this._progress.layer = !elements.progress ? 23 : 5;
+            this._progress.layer = !elements.Progress ? 23 : 5;
 
-            this._health.layer = !elements.health ? 23 : 5;
+            this._health.layer = !elements.EnargyBar ? 23 : 5;
 
         }
         public void FindLivCamera()

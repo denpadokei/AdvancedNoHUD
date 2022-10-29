@@ -1,10 +1,6 @@
-﻿using BeatSaberMarkupLanguage;
+﻿using AdvancedNoHUD.Configuration;
 using BeatSaberMarkupLanguage.Attributes;
-using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.ViewControllers;
-using System;
-using System.Collections.Generic;
-
 
 namespace AdvancedNoHUD.UI.ViewControllers
 {
@@ -20,7 +16,7 @@ namespace AdvancedNoHUD.UI.ViewControllers
         [UIValue("setting-scene")]
         public string SettingScene { get; set; } = "Paused";
 
-        private bool _hudEn = Configuration.PluginConfig.Instance.Pause.everything;
+        private bool _hudEn = PluginConfig.Instance.Pause.Everything;
         [UIValue("enabled-bool")]
         public bool IngameHudEnabled
         {
@@ -29,10 +25,11 @@ namespace AdvancedNoHUD.UI.ViewControllers
             {
                 this._hudEn = value;
                 this.NotifyPropertyChanged();
+                PluginConfig.Instance.Pause.AllEnabled(value);
             }
         }
 
-        private bool _comboEn = Configuration.PluginConfig.Instance.Pause.elements.combo;
+        private bool _comboEn = PluginConfig.Instance.Pause.Elements.Combo;
         [UIValue("combo-bool")]
         public bool IngameComboEnabled
         {
@@ -43,7 +40,7 @@ namespace AdvancedNoHUD.UI.ViewControllers
                 this.NotifyPropertyChanged();
             }
         }
-        private bool _scoreEn = Configuration.PluginConfig.Instance.Pause.elements.score;
+        private bool _scoreEn = PluginConfig.Instance.Pause.Elements.Score;
         [UIValue("score-bool")]
         public bool IngameScoreEnabled
         {
@@ -54,7 +51,7 @@ namespace AdvancedNoHUD.UI.ViewControllers
                 this.NotifyPropertyChanged();
             }
         }
-        private bool _rankEn = Configuration.PluginConfig.Instance.Pause.elements.rank;
+        private bool _rankEn = PluginConfig.Instance.Pause.Elements.Rank;
         [UIValue("rank-bool")]
         public bool IngameRankEnabled
         {
@@ -65,7 +62,7 @@ namespace AdvancedNoHUD.UI.ViewControllers
                 this.NotifyPropertyChanged();
             }
         }
-        private bool _multiplierEn = Configuration.PluginConfig.Instance.Pause.elements.multiplier;
+        private bool _multiplierEn = PluginConfig.Instance.Pause.Elements.Multiplier;
         [UIValue("multiplier-bool")]
         public bool IngameMultiplierEnabled
         {
@@ -76,7 +73,7 @@ namespace AdvancedNoHUD.UI.ViewControllers
                 this.NotifyPropertyChanged();
             }
         }
-        private bool _progressEn = Configuration.PluginConfig.Instance.Pause.elements.progress;
+        private bool _progressEn = PluginConfig.Instance.Pause.Elements.Progress;
         [UIValue("progress-bool")]
         public bool IngameProgressEnabled
         {
@@ -87,7 +84,7 @@ namespace AdvancedNoHUD.UI.ViewControllers
                 this.NotifyPropertyChanged();
             }
         }
-        private bool _healthEn = Configuration.PluginConfig.Instance.Pause.elements.health;
+        private bool _healthEn = PluginConfig.Instance.Pause.Elements.EnargyBar;
         [UIValue("health-bool")]
         public bool IngameHealthEnabled
         {
@@ -100,11 +97,12 @@ namespace AdvancedNoHUD.UI.ViewControllers
         }
 
         [UIAction("yes")]
-        public void o()
+        public void Apply()
         {
-            var _AAAAAAA = new CustomTypes.HudElements(this.IngameComboEnabled, this.IngameScoreEnabled, this.IngameRankEnabled, this.IngameMultiplierEnabled, this.IngameProgressEnabled, this.IngameHealthEnabled);
-            var _BBBBBBB = new CustomTypes.LocationPreset(CustomTypes.whereHUD.Pause, _AAAAAAA, this.IngameHudEnabled);
-            Configuration.PluginConfig.Instance.Pause = _BBBBBBB;
+            var element = new HudElements(this.IngameComboEnabled, this.IngameScoreEnabled, this.IngameRankEnabled, this.IngameMultiplierEnabled, this.IngameProgressEnabled, this.IngameHealthEnabled);
+            var preset = new LocationPreset(WhereHUD.Pause, element, this.IngameHudEnabled);
+            preset.AllEnabled(this.IngameHudEnabled);
+            PluginConfig.Instance.Pause = preset;
         }
     }
 }
