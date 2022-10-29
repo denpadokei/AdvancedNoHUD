@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AdvancedNoHUD.CustomTypes
+﻿namespace AdvancedNoHUD.CustomTypes
 {
     public enum whereHUD
     {
@@ -22,7 +16,7 @@ namespace AdvancedNoHUD.CustomTypes
         health
     }
 
-    internal struct HudElements
+    public struct HudElements
     {
         public bool combo;
         public bool score;
@@ -40,7 +34,7 @@ namespace AdvancedNoHUD.CustomTypes
             this.progress = progress;
             this.health = health;
         }
-        
+
         public HudElements(bool combo, bool score, bool rank, bool multiplier, bool progress, bool health)
         {
             this.combo = combo;
@@ -52,15 +46,13 @@ namespace AdvancedNoHUD.CustomTypes
         }
     }
 
-    
-
-    internal struct LocationPreset
+    public struct LocationPreset
     {
         public whereHUD where;
         public HudElements elements;
         public bool everything;
 
-        public void AllEnabled (bool yes)
+        public void AllEnabled(bool yes)
         {
             this.everything = yes;
         }

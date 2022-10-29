@@ -1,14 +1,12 @@
 ﻿
-using System.Runtime.CompilerServices;
 using IPA.Config.Stores;
-using System.Collections.Generic;
 using IPA.Config.Stores.Attributes;
-using IPA.Config.Stores.Converters;
+using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo(GeneratedStore.AssemblyVisibilityTarget)]
 namespace AdvancedNoHUD.Configuration
 {
-    internal class PluginConfig
+    public class PluginConfig
     {
         public static PluginConfig Instance { get; set; }
         [NonNullable]
