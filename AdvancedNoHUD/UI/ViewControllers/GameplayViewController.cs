@@ -1,10 +1,6 @@
-﻿using BeatSaberMarkupLanguage;
+﻿using AdvancedNoHUD.Configuration;
 using BeatSaberMarkupLanguage.Attributes;
-using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.ViewControllers;
-using System;
-using System.Collections.Generic;
-
 
 namespace AdvancedNoHUD.UI.ViewControllers
 {
@@ -15,7 +11,7 @@ namespace AdvancedNoHUD.UI.ViewControllers
         [UIValue("setting-scene")]
         public string SettingScene { get; set; } = "Gameplay";
 
-        private bool _hudEn = Configuration.PluginConfig.Instance.HMD.everything;
+        private bool _hudEn = PluginConfig.Instance.HMD.Everything;
         [UIValue("enabled-bool")]
         public bool IngameHudEnabled
         {
@@ -24,11 +20,10 @@ namespace AdvancedNoHUD.UI.ViewControllers
             {
                 this._hudEn = value;
                 this.NotifyPropertyChanged();
-                Configuration.PluginConfig.Instance.HMD.AllEnabled(value);
             }
         }
 
-        private bool _comboEn = Configuration.PluginConfig.Instance.HMD.elements.combo;
+        private bool _comboEn = PluginConfig.Instance.HMD.Elements.Combo;
         [UIValue("combo-bool")]
         public bool IngameComboEnabled
         {
@@ -39,7 +34,7 @@ namespace AdvancedNoHUD.UI.ViewControllers
                 this.NotifyPropertyChanged();
             }
         }
-        private bool _scoreEn = Configuration.PluginConfig.Instance.HMD.elements.score;
+        private bool _scoreEn = PluginConfig.Instance.HMD.Elements.Score;
         [UIValue("score-bool")]
         public bool IngameScoreEnabled
         {
@@ -50,7 +45,7 @@ namespace AdvancedNoHUD.UI.ViewControllers
                 this.NotifyPropertyChanged();
             }
         }
-        private bool _rankEn = Configuration.PluginConfig.Instance.HMD.elements.rank;
+        private bool _rankEn = PluginConfig.Instance.HMD.Elements.Rank;
         [UIValue("rank-bool")]
         public bool IngameRankEnabled
         {
@@ -61,7 +56,7 @@ namespace AdvancedNoHUD.UI.ViewControllers
                 this.NotifyPropertyChanged();
             }
         }
-        private bool _multiplierEn = Configuration.PluginConfig.Instance.HMD.elements.multiplier;
+        private bool _multiplierEn = PluginConfig.Instance.HMD.Elements.Multiplier;
         [UIValue("multiplier-bool")]
         public bool IngameMultiplierEnabled
         {
@@ -72,7 +67,7 @@ namespace AdvancedNoHUD.UI.ViewControllers
                 this.NotifyPropertyChanged();
             }
         }
-        private bool _progressEn = Configuration.PluginConfig.Instance.HMD.elements.progress;
+        private bool _progressEn = PluginConfig.Instance.HMD.Elements.Progress;
         [UIValue("progress-bool")]
         public bool IngameProgressEnabled
         {
@@ -83,7 +78,7 @@ namespace AdvancedNoHUD.UI.ViewControllers
                 this.NotifyPropertyChanged();
             }
         }
-        private bool _healthEn = Configuration.PluginConfig.Instance.HMD.elements.health;
+        private bool _healthEn = PluginConfig.Instance.HMD.Elements.EnargyBar;
         [UIValue("health-bool")]
         public bool IngameHealthEnabled
         {
@@ -96,11 +91,12 @@ namespace AdvancedNoHUD.UI.ViewControllers
         }
 
         [UIAction("yes")]
-        public void o()
+        public void Apply()
         {
-            var _AAAAAAA = new CustomTypes.HudElements(this.IngameComboEnabled, this.IngameScoreEnabled, this.IngameRankEnabled, this.IngameMultiplierEnabled, this.IngameProgressEnabled, this.IngameHealthEnabled);
-            var _BBBBBBB = new CustomTypes.LocationPreset(CustomTypes.whereHUD.HMD, _AAAAAAA, this.IngameHudEnabled);
-            Configuration.PluginConfig.Instance.HMD = _BBBBBBB;
+            var element = new HudElements(this.IngameComboEnabled, this.IngameScoreEnabled, this.IngameRankEnabled, this.IngameMultiplierEnabled, this.IngameProgressEnabled, this.IngameHealthEnabled);
+            var preset = new LocationPreset(WhereHUD.HMD, element, this.IngameHudEnabled);
+            preset.AllEnabled(this.IngameHudEnabled);
+            PluginConfig.Instance.HMD = preset;
         }
 
         public void Initialize()

@@ -10,11 +10,11 @@ namespace AdvancedNoHUD.Configuration
     {
         public static PluginConfig Instance { get; set; }
         [NonNullable]
-        public virtual CustomTypes.LocationPreset HMD { get; set; } = new CustomTypes.LocationPreset();
+        public virtual LocationPreset HMD { get; set; } = new LocationPreset(WhereHUD.HMD, new HudElements(), false);
         [NonNullable]
-        public virtual CustomTypes.LocationPreset LIV { get; set; } = new CustomTypes.LocationPreset();
+        public virtual LocationPreset LIV { get; set; } = new LocationPreset(WhereHUD.LIV, new HudElements(), false);
         [NonNullable]
-        public virtual CustomTypes.LocationPreset Pause { get; set; } = new CustomTypes.LocationPreset();
+        public virtual LocationPreset Pause { get; set; } = new LocationPreset(WhereHUD.Pause, new HudElements(), false);
 
         /// <summary>
         /// This is called whenever BSIPA reads the config from disk (including when file changes are detected).

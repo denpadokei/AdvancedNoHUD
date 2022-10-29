@@ -5,7 +5,7 @@
     <horizontal bg='panel-top' pad-left='15' pad-right='15' horizontal-fit='PreferredSize'>
       <text text='~setting-scene' align='Center' font-size='8'/>
     </horizontal>
-    <bool-setting text='Enabled' value='enabled-bool' font-size='5' apply-on-change='true' bind-value='true'/>
+    <bool-setting text='All HUD visible' value='enabled-bool' font-size='5' apply-on-change='true' bind-value='true'/>
     <background bg='round-rect-panel' color='#FFFFFF' pref-height='0.1'/>
     <vertical id='all-other-toggles'>
       <bool-setting text='Combo' value='combo-bool' font-size='5' apply-on-change='true' bind-value='true'/>
@@ -13,7 +13,7 @@
       <bool-setting text='Rank' value='rank-bool' font-size='5' apply-on-change='true' bind-value='true'/>
       <bool-setting text='Multiplier' value='multiplier-bool' font-size='5' apply-on-change='true' bind-value='true'/>
       <bool-setting text='Progress' value='progress-bool' font-size='5' apply-on-change='true' bind-value='true'/>
-      <bool-setting text='Health' value='health-bool' font-size='5' apply-on-change='true' bind-value='true'/>
+      <bool-setting text='Enargy bar' value='health-bool' font-size='5' apply-on-change='true' bind-value='true'/>
     </vertical>
   </vertical>
 </bg>

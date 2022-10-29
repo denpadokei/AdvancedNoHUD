@@ -6,6 +6,23 @@ using IPALogger = IPA.Logging.Logger;
 
 namespace AdvancedNoHUD
 {
+    public enum WhereHUD
+    {
+        LIV = 1,
+        HMD = 2,
+        Pause = 3
+    }
+
+    public enum HUDelement
+    {
+        combo,
+        score,
+        rank,
+        multiplier,
+        progress,
+        health
+    }
+
     [Plugin(RuntimeOptions.SingleStartInit)]
     public class Plugin
     {
