@@ -1,41 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AdvancedNoHUD.UI.ViewControllers;
 using BeatSaberMarkupLanguage;
+using BeatSaberMarkupLanguage.MenuButtons;
 using HMUI;
-using AdvancedNoHUD.UI.ViewControllers;
+using System;
+using System.Collections;
+using UnityEngine;
+using Zenject;
 
 namespace AdvancedNoHUD.UI
 {
-    class AdvancedNoHUDFlowCoordinator : FlowCoordinator
+    public class AdvancedNoHUDFlowCoordinator : FlowCoordinator, IInitializable
     {
         private GameplayViewController _GameplayViewController;
         private PauseViewController _PauseViewController;
         private LIVViewController _LIVViewController;
-        public void Awake()
+
+        [Inject]
+        public void Constractor(GameplayViewController gameplayViewController, PauseViewController pauseViewController, LIVViewController livViewController)
         {
-            if (!_GameplayViewController)
-                _GameplayViewController = BeatSaberUI.CreateViewController<GameplayViewController>();
-            if (!_PauseViewController)
-                _PauseViewController = BeatSaberUI.CreateViewController<PauseViewController>();
-            //if (!_LIVViewController)
-            //    _LIVViewController = BeatSaberUI.CreateViewController<LIVViewController>();
+            this._GameplayViewController = gameplayViewController;
+            this._PauseViewController = pauseViewController;
+            this._LIVViewController = livViewController;
         }
+
         protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
-            try
-            {
-                if (firstActivation)
-                {
-                    SetTitle("HUD Settings");
-                    showBackButton = true;
-                    ProvideInitialViewControllers(_GameplayViewController, _PauseViewController);
+            try {
+                if (firstActivation) {
+                    this.SetTitle("HUD Settings");
+                    this.showBackButton = true;
+                    //this.ProvideInitialViewControllers(this._GameplayViewController, this._PauseViewController, this._LIVViewController);
+                    this.ProvideInitialViewControllers(this._GameplayViewController, this._PauseViewController);
                 }
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Plugin.Log.Error(e);
             }
         }
@@ -43,9 +41,22 @@ namespace AdvancedNoHUD.UI
         protected override void BackButtonWasPressed(ViewController topViewController)
         {
             BeatSaberUI.MainFlowCoordinator.DismissFlowCoordinator(this);
-            _GameplayViewController.o();
-            _PauseViewController.o();
-            //_LIVViewController.o();
+            this._GameplayViewController.o();
+            this._PauseViewController.o();
+            this._LIVViewController.o();
+        }
+        public void Initialize()
+        {
+            var menuButton = new MenuButton("AdvancedNoHUD", "Manage when and where the HUD is shown", this.ShowFlow);
+            MenuButtons.instance.RegisterButton(menuButton);
+        }
+
+        public void ShowFlow()
+        {
+            if (this._GameplayViewController == null || this._PauseViewController == null || this._LIVViewController == null) {
+                return;
+            }
+            BeatSaberUI.MainFlowCoordinator.PresentFlowCoordinator(this);
         }
     }
 }

@@ -1,11 +1,8 @@
-﻿using System;
+﻿using AdvancedNoHUD.CustomTypes;
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
+using Zenject;
 
 namespace AdvancedNoHUD
 {
@@ -15,76 +12,212 @@ namespace AdvancedNoHUD
     /// </summary>
     public class AdvancedNoHUDController : MonoBehaviour
     {
-        public static AdvancedNoHUDController Instance { get; private set; }
+        private GameObject _combo;
+        private GameObject _score;
+        private GameObject _rank;
+        private GameObject _multiplier;
+        private GameObject _progress;
+        private GameObject _health;
+        private IGamePause _gamePause;
+        private IAudioTimeSource _audioTimeSource;
+        private float _startTime = 0f;
+        private WaitWhile _waitWhile;
+        private static readonly int s_hiddenHudLayer = 23;
+        private static readonly int s_normalHudLayer = 5;
+        private bool _found = false;
 
-        // These methods are automatically called by Unity, you should remove any you aren't using.
-        #region Monobehaviour Messages
-        /// <summary>
-        /// Only ever called once, mainly used to initialize variables.
-        /// </summary>
-        private void Awake()
+        //private readonly Camera LIVCam;
+        private GameObject _hud;
+
+        [Inject]
+        public void Constractor(IGamePause gamePause, IAudioTimeSource audio)
         {
-            // For this particular MonoBehaviour, we only want one instance to exist at any time, so store a reference to it in a static property
-            //   and destroy any that are created while one already exists.
-            if (Instance != null)
-            {
-                Plugin.Log?.Warn($"Instance of {GetType().Name} already exists, destroying.");
-                GameObject.DestroyImmediate(this);
-                return;
+            this._gamePause = gamePause;
+            this._audioTimeSource = audio;
+            this._startTime = audio.songTime;
+        }
+
+        public void Awake()
+        {
+            this._waitWhile = new WaitWhile(() => this._audioTimeSource.songTime <= this._startTime);
+            this._gamePause.didPauseEvent += this.GamePause_didPauseEvent;
+            this._gamePause.didResumeEvent += this.GamePause_didResumeEvent;
+        }
+
+        public IEnumerator Start()
+        {
+            yield return this._waitWhile;
+#if DEBUG
+            Plugin.Log.Info("AudioTimeSyncController.StartSong()");
+#endif
+            if (this.FindHUD()) {
+                this._found = true;
+                this.FindHUDElements();
+                this.PutThings(CustomTypes.whereHUD.HMD);
             }
-            GameObject.DontDestroyOnLoad(this); // Don't destroy this object on scene changes
-            Instance = this;
-            Plugin.Log?.Debug($"{name}: Awake()");
+#if DEBUG
+            Plugin.Log.Info("Finished Setup");
+#endif
         }
-        /// <summary>
-        /// Only ever called once on the first frame the script is Enabled. Start is called after any other script's Awake() and before Update().
-        /// </summary>
-        private void Start()
+
+        public void OnDestroy()
         {
+            this._gamePause.didPauseEvent -= this.GamePause_didPauseEvent;
+            this._gamePause.didResumeEvent -= this.GamePause_didResumeEvent;
+        }
 
+        private void GamePause_didPauseEvent()
+        {
+#if DEBUG
+            Plugin.Log.Info("AudioTimeSyncController.Pause()");
+#endif
+            if (this._found) {
+                this.PutThings(CustomTypes.whereHUD.Pause);
+            }
+        }
+        private void GamePause_didResumeEvent()
+        {
+#if DEBUG
+            Plugin.Log.Info("AudioTimeSyncController.Resume()");
+#endif
+            if (this._found) {
+                this.PutThings(CustomTypes.whereHUD.HMD);
+            }
+        }
+
+        public bool AssignObject(ref GameObject assign, string name)
+        {
+            try {
+                assign = GameObject.Find(name);
+                Plugin.Log.Debug($"Found {name}");
+                return true;
+            }
+            catch (Exception) {
+                Plugin.Log.Critical($"{name} could not be found!)");
+                return false;
+            }
+        }
+
+        public void VerboseActive(ref GameObject objec, bool status, string name = "")
+        {
+            try {
+                objec.SetActive(status);
+            }
+            catch (NullReferenceException) {
+
+                Plugin.Log.Critical($"NullReferenceException when setting status of {name}");
+            }
+            catch (Exception e) {
+                Plugin.Log.Error(e);
+            }
+        }
+
+        public void FindHUDElements()
+        {
+            if (this._hud == null) {
+                this.FindHUD();
+            }
+            //i know this is jank but in case some idiot has counters+ installs and breaks shit
+            this.AssignObject(ref this._combo, "ComboPanel");
+            this.AssignObject(ref this._score, "ScoreText");
+            if (this.AssignObject(ref this._rank, "ImmediateRankText")) {
+                GameObject.Find("RelativeScoreText").gameObject.transform.SetParent(this._rank.transform);
+            }
+
+            this.AssignObject(ref this._multiplier, "MultiplierCanvas");
+            this.AssignObject(ref this._progress, "SongProgressCanvas");
+            this.AssignObject(ref this._health, "EnergyPanel");
+        }
+
+        public void PutThings(whereHUD wh)
+        {
+            var tempPreset = new LocationPreset();
+            switch (wh) {
+                case whereHUD.HMD:
+                    tempPreset = Configuration.PluginConfig.Instance.HMD;
+                    break;
+                case whereHUD.Pause:
+                    tempPreset = Configuration.PluginConfig.Instance.Pause;
+                    break;
+            }
+            try {
+                this.VerboseActive(ref this._combo, tempPreset.elements.combo, "Combo");
+                this.VerboseActive(ref this._score, tempPreset.elements.score, "Score");
+                this.VerboseActive(ref this._rank, tempPreset.elements.rank, "Rank");
+                this.VerboseActive(ref this._multiplier, tempPreset.elements.multiplier, "Multiplier");
+                this.VerboseActive(ref this._progress, tempPreset.elements.progress, "Progress");
+                this.VerboseActive(ref this._health, tempPreset.elements.health, "Health");
+            }
+            catch (NullReferenceException) {
+                this.FindHUDElements();
+                this.PutThings(wh);
+            }
+        }
+        public void HideInLiv()
+        {
+            var elements = Configuration.PluginConfig.Instance.LIV.elements;
+
+            this._combo.layer = !elements.combo ? 23 : 5;
+
+            this._score.layer = !elements.score ? 23 : 5;
+
+            this._rank.layer = !elements.rank ? 23 : 5;
+
+            this._multiplier.layer = !elements.multiplier ? 23 : 5;
+
+            this._progress.layer = !elements.progress ? 23 : 5;
+
+            this._health.layer = !elements.health ? 23 : 5;
+
+        }
+        public void FindLivCamera()
+        {
+            int hudToggle(int flag, bool show = true)
+            {
+                return show ? flag | (1 << s_hiddenHudLayer) : flag & ~(1 << s_hiddenHudLayer);
+            }
+
+            foreach (var cam in Resources.FindObjectsOfTypeAll<Camera>()) {
+                if (cam.name == "MainCamera") {
+                    cam.cullingMask = hudToggle(cam.cullingMask, false);
+
+                    if (cam.name != "MainCamera") {
+                        continue;
+                    }
+
+                    var x = cam.GetComponent<LIV.SDK.Unity.LIV>();
+
+                    if (x != null) {
+                        x.spectatorLayerMask = s_hiddenHudLayer;
+                    }
+                }
+                else {
+                    cam.cullingMask = hudToggle(cam.cullingMask, (cam.cullingMask & (1 << s_normalHudLayer)) != 0);
+                }
+            }
         }
 
         /// <summary>
-        /// Called every frame if the script is enabled.
+        /// Finds the HUD
         /// </summary>
-        private void Update()
+        /// <returns>true if found, false if not</returns>
+        public bool FindHUD()
         {
+            this._hud = GameObject.Find("BasicGameHUD");
+            if (this._hud == null) {
+                this._hud = GameObject.Find("NarrowGameHUD");
+            }
 
+            if (this._hud == null) {
+                this._hud = GameObject.Find("FlyingGameHUD");
+            }
+
+            if (this._hud == null) {
+                Plugin.Log.Notice("HUD was not found!");
+            }
+
+            Plugin.Log.Info($"HUD name is: \"{this._hud.name}\"");
+            return this._hud != null;
         }
-
-        /// <summary>
-        /// Called every frame after every other enabled script's Update().
-        /// </summary>
-        private void LateUpdate()
-        {
-        }
-
-        /// <summary>
-        /// Called when the script becomes enabled and active
-        /// </summary>
-        private void OnEnable()
-        {
-
-        }
-
-        /// <summary>
-        /// Called when the script becomes disabled or when it is being destroyed.
-        /// </summary>
-        private void OnDisable()
-        {
-
-        }
-
-        /// <summary>
-        /// Called when the script is being destroyed.
-        /// </summary>
-        private void OnDestroy()
-        {
-            Plugin.Log?.Debug($"{name}: OnDestroy()");
-            if (Instance == this)
-                Instance = null; // This MonoBehaviour is being destroyed, so set the static instance property to null.
-
-        }
-        #endregion
     }
 }
