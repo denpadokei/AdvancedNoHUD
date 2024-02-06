@@ -8,10 +8,10 @@ namespace AdvancedNoHUD.Installers
     {
         public override void InstallBindings()
         {
-            this.Container.BindInterfacesAndSelfTo<GameplayViewController>().FromNewComponentAsViewController().AsSingle();
-            this.Container.BindInterfacesAndSelfTo<LIVViewController>().FromNewComponentAsViewController().AsSingle();
-            this.Container.BindInterfacesAndSelfTo<PauseViewController>().FromNewComponentAsViewController().AsSingle();
-            this.Container.BindInterfacesAndSelfTo<AdvancedNoHUDFlowCoordinator>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
+            _ = this.Container.BindInterfacesAndSelfTo<GameplayViewController>().FromNewComponentAsViewController().AsSingle();
+            _ = this.Container.BindInterfacesAndSelfTo<LIVViewController>().FromNewComponentAsViewController().AsSingle();
+            _ = this.Container.BindInterfacesAndSelfTo<PauseViewController>().FromNewComponentAsViewController().AsSingle();
+            _ = this.Container.BindInterfacesAndSelfTo<AdvancedNoHUDFlowCoordinator>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
         }
     }
 }

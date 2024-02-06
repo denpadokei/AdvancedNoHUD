@@ -50,11 +50,12 @@ namespace AdvancedNoHUD
 #if DEBUG
             Plugin.Log.Info("AudioTimeSyncController.StartSong()");
 #endif
-            if (this.FindHUD()) {
-                this._found = true;
-                this.FindHUDElements();
-                this.PutThings(WhereHUD.HMD);
-            }
+            do {
+                if (this.FindHUD()) {
+                    this._found = true;
+                    this.FindHUDElements();
+                }
+            } while (!this.PutThings(WhereHUD.HMD));
 #if DEBUG
             Plugin.Log.Info("Finished Setup");
 #endif
@@ -89,11 +90,16 @@ namespace AdvancedNoHUD
         {
             try {
                 assign = GameObject.Find(name);
-                Plugin.Log.Debug($"Found {name}");
-                return true;
+                if (assign) {
+                    Plugin.Log.Info($"Found {name}");
+                }
+                else {
+                    Plugin.Log.Warn($"{name} could not be found!)");
+                }
+                return assign;
             }
-            catch (Exception) {
-                Plugin.Log.Critical($"{name} could not be found!)");
+            catch (Exception e) {
+                Plugin.Log.Error(e);
                 return false;
             }
         }
@@ -101,11 +107,12 @@ namespace AdvancedNoHUD
         public void VerboseActive(ref GameObject objec, bool status, string name = "")
         {
             try {
-                objec.SetActive(status);
+                if (objec) {
+                    objec.SetActive(status);
+                }
             }
             catch (NullReferenceException) {
-
-                Plugin.Log.Critical($"NullReferenceException when setting status of {name}");
+                Plugin.Log.Error($"NullReferenceException when setting status of {name}");
             }
             catch (Exception e) {
                 Plugin.Log.Error(e);
@@ -115,23 +122,23 @@ namespace AdvancedNoHUD
         public void FindHUDElements()
         {
             if (this._hud == null) {
-                this.FindHUD();
+                _ = this.FindHUD();
             }
             //i know this is jank but in case some idiot has counters+ installs and breaks shit
-            this.AssignObject(ref this._combo, "ComboPanel");
-            this.AssignObject(ref this._score, "ScoreText");
+            _ = this.AssignObject(ref this._combo, "ComboPanel");
+            _ = this.AssignObject(ref this._score, "ScoreText");
             if (this.AssignObject(ref this._rank, "ImmediateRankText")) {
                 GameObject.Find("RelativeScoreText").gameObject.transform.SetParent(this._rank.transform);
             }
 
-            this.AssignObject(ref this._multiplier, "MultiplierCanvas");
-            this.AssignObject(ref this._progress, "SongProgressCanvas");
-            this.AssignObject(ref this._health, "EnergyPanel");
+            _ = this.AssignObject(ref this._multiplier, "MultiplierCanvas");
+            _ = this.AssignObject(ref this._progress, "SongProgressCanvas");
+            _ = this.AssignObject(ref this._health, "EnergyPanel");
         }
 
-        public void PutThings(WhereHUD wh)
+        public bool PutThings(WhereHUD wh)
         {
-            var tempPreset = new LocationPreset();
+            LocationPreset tempPreset;
             switch (wh) {
                 case WhereHUD.HMD:
                     tempPreset = PluginConfig.Instance.HMD;
@@ -139,6 +146,8 @@ namespace AdvancedNoHUD
                 case WhereHUD.Pause:
                     tempPreset = PluginConfig.Instance.Pause;
                     break;
+                default:
+                    return false;
             }
             try {
                 this.VerboseActive(ref this._combo, tempPreset.Elements.Combo, "Combo");
@@ -148,10 +157,11 @@ namespace AdvancedNoHUD
                 this.VerboseActive(ref this._progress, tempPreset.Elements.Progress, "Progress");
                 this.VerboseActive(ref this._health, tempPreset.Elements.EnargyBar, "Health");
             }
-            catch (NullReferenceException) {
-                this.FindHUDElements();
-                this.PutThings(wh);
+            catch (Exception e) {
+                Plugin.Log.Error(e);
+                return false;
             }
+            return true;
         }
         public void HideInLiv()
         {
@@ -215,8 +225,9 @@ namespace AdvancedNoHUD
             if (this._hud == null) {
                 Plugin.Log.Notice("HUD was not found!");
             }
-
-            Plugin.Log.Info($"HUD name is: \"{this._hud.name}\"");
+            else {
+                Plugin.Log.Info($"HUD name is: \"{this._hud.name}\"");
+            }
             return this._hud != null;
         }
     }
