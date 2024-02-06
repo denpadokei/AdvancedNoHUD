@@ -126,7 +126,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\CustomTypes.cs" />
+    <Compile Include="Configuration\HudElements.cs" />
+    <Compile Include="Configuration\LocationPreset.cs" />
     <Compile Include="Installers\ANHGameInstaller.cs" />
     <Compile Include="Installers\ANHMenuInstaller.cs" />
     <Compile Include="Plugin.cs" />

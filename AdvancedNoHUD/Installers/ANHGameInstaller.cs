@@ -6,7 +6,7 @@ namespace AdvancedNoHUD.Installers
     {
         public override void InstallBindings()
         {
-            this.Container.BindInterfacesAndSelfTo<AdvancedNoHUDController>().FromNewComponentOnNewGameObject().AsCached().NonLazy();
+            _ = this.Container.BindInterfacesAndSelfTo<AdvancedNoHUDController>().FromNewComponentOnNewGameObject().AsCached().NonLazy();
         }
     }
 }
