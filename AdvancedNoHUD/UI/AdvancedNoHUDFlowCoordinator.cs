@@ -46,7 +46,7 @@ namespace AdvancedNoHUD.UI
         public void Initialize()
         {
             var menuButton = new MenuButton("AdvancedNoHUD", "Manage when and where the HUD is shown", this.ShowFlow);
-            MenuButtons.instance.RegisterButton(menuButton);
+            MenuButtons.Instance.RegisterButton(menuButton);
         }
 
         public void ShowFlow()
