@@ -221,7 +221,25 @@ namespace AdvancedNoHUD
             if (this._hud == null) {
                 this._hud = GameObject.Find("FlyingGameHUD");
             }
-
+            if (this._hud == null) {
+                // 末尾が "HUD" のGameObjectのみ取得
+                var hudObjects = GameObject.FindObjectsOfType<GameObject>();
+                var hudCandidates = Array.FindAll(hudObjects, go => go.name.EndsWith("HUD", StringComparison.Ordinal));
+                Plugin.Log.Notice("HUD was not found!");
+                if (hudCandidates.Length > 0) {
+                    Plugin.Log.Notice($"Found {hudCandidates.Length} GameObjects ending with 'HUD':");
+                    foreach (var go in hudCandidates) {
+                        Plugin.Log.Notice($"- {go.name}");
+                        // 子に "EnergyPanel" があるかチェック
+                        var energyPanel = go.transform.Find("EnergyPanel");
+                        if (energyPanel != null) {
+                            this._hud = go;
+                            Plugin.Log.Notice($"Assigned {go.name} to _hud because it contains EnergyPanel.");
+                            break;
+                        }
+                    }
+                }
+            }
             if (this._hud == null) {
                 Plugin.Log.Notice("HUD was not found!");
             }
